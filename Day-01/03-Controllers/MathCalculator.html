@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+     <style>
+        .field{
+            margin-bottom: 10px;
+        }
+        #divResult{
+            font-size: 28pt;
+            color: red;
+        }
+        label{
+            display: block;
+        }
+    </style>
+    <script src="angular.js"></script>
+    <script>
+         Object.prototype.toInt = function(){
+            return parseInt(this.toString(),10);
+        }
+        function Calculator(){
+            this.number1 = 0;
+            this.number2 = 0;
+            this.result = 0;
+
+            this.add = function(){
+                this.result = this.number1.toInt() + this.number2.toInt();
+            };
+            this.subtract = function(){
+                this.result = this.number1.toInt() - this.number2.toInt();
+            };
+            this.multiply = function(){
+                this.result = this.number1.toInt() * this.number2.toInt();
+            };
+            this.divide = function(){
+                this.result = this.number1.toInt() / this.number2.toInt();
+            };
+        }
+        function Greet(){
+            this.name = '';
+            this.greet = function(){
+                this.greetMsg = "Hi " + this.name + ", Have a nice day!";
+            };
+            this.greetMsg = '';
+        }
+
+        var myApp = angular.module("myApp", []);
+        myApp.run(function($rootScope){
+
+
+        });
+        myApp.controller("greetController", function($scope){
+            $scope.greet = new Greet();
+        });
+        myApp.controller("mathController", function($scope){
+            $scope.calculator = new Calculator();
+        });
+    </script>
+</head>
+<body ng-app="myApp">
+    <h1>Greet</h1>
+    <div class="content" ng-controller="greetController">
+        <input type="text" ng-model="greet.name">
+        <input type="button" value="Greet" ng-click="greet.greet()">
+        <div ng-bind="greet.greetMsg"></div>
+    </div>
+   <h1>Math Calculator</h1>
+    <div class="content" ng-controller="mathController">
+        <input type="text" name="" id="txtNumber1" ng-model="calculator.number1">
+    <select name="" id="selectOperation" ng-model="calculator.operation">
+        <option value="add">add</option>
+        <option value="subtract">subtract</option>
+        <option value="divide">divide</option>
+        <option value="multiply">multiply</option>
+    </select>
+    <input type="text" name="" id="txtNumber2" ng-model="calculator.number2">
+    <input type="button" value="Caluculate" id="btnCalculate" ng-click="calculator[calculator.operation]()">
+    <div id="divResult" ng-bind="calculator.result"></div>
+    </div>
+</body>
+</html>
