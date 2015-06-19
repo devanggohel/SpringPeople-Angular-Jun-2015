@@ -15,17 +15,45 @@
             display: block;
         }
     </style>
+    <script src="angular.js"></script>
+    <script>
+         Object.prototype.toInt = function(){
+            return parseInt(this.toString(),10);
+        }
+        function Calculator(){
+            this.number1 = 0;
+            this.number2 = 0;
+            this.result = 0;
+
+            this.add = function(){
+                this.result = this.number1.toInt() + this.number2.toInt();
+            };
+            this.subtract = function(){
+                this.result = this.number1.toInt() - this.number2.toInt();
+            };
+            this.multiply = function(){
+                this.result = this.number1.toInt() * this.number2.toInt();
+            };
+            this.divide = function(){
+                this.result = this.number1.toInt() / this.number2.toInt();
+            };
+        }
+        angular.module("calculatorApp", [])
+            .run(function($rootScope){
+                $rootScope.calculator = new Calculator();
+            })
+    </script>
 </head>
-<body>
-    <input type="text" name="" id="txtNumber1">
-    <select name="" id="selectOperation">
+<body ng-app="calculatorApp">
+    <input type="text" name="" id="txtNumber1" ng-model="calculator.number1">
+    <select name="" id="selectOperation" ng-model="calculator.operation">
         <option value="add">add</option>
         <option value="subtract">subtract</option>
         <option value="divide">divide</option>
         <option value="multiply">multiply</option>
     </select>
-    <input type="text" name="" id="txtNumber2">
-    <input type="button" value="Caluculate" id="btnCalculate">
-    <div id="divResult">[Result]</div>
+    <input type="text" name="" id="txtNumber2" ng-model="calculator.number2">
+    <input type="button" value="Caluculate" id="btnCalculate" ng-click="calculator[calculator.operation]()">
+    <div id="divResult" ng-bind="calculator.result"></div>
 </body>
 </html>
