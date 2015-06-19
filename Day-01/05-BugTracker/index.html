@@ -47,16 +47,39 @@
     10. Persist the bugs in the server
     */
 
+    /*
+    window.localStorage
+        - persistent store
+        - same origin policy for security
+        - key/value store
+        - key should be unique
+        - both key and value should be strings
+            (for objects,
+                use angular.toJson(obj) to convert the obj to string
+                use angular.fromJson(str) to convert the json string to object
+            )
+        - for key generation using Date.now().toStrin()
+
+        APIs
+            - setItem(key,value)
+            - getItem(key) // => value
+            - removeItem(key)
+            - key(index) //=> key
+            - clear()
+            - length
+    */
+
+
         var bugTrackerApp = angular.module("bugTrackerApp", []);
 
         bugTrackerApp.controller("bugsController", function($scope){
             $scope.newBug = '';
             $scope.bugs = [
-                { name : "User authentication failure", isClosed : false, createdAt : new Date(2015,5,19,9,0,0)},
-                { name : "Data not persisting in the server", isClosed : false, createdAt : new Date(2015,5,19,11,0,0)},
-                { name : "Application not responsive", isClosed : false, createdAt : new Date(2015,5,17,9,0,0)},
-                { name : "Application is hardly reliable", isClosed : false, createdAt : new Date(2015,5,9,9,0,0)},
-                { name : "Authorization has stopped working", isClosed : false, createdAt : new Date(2015,3,19,9,0,0)},
+                { id : "1434684600000", name : "User authentication failure", isClosed : false, createdAt : new Date(2015,5,19,9,0,0)},
+                { id : "1434691800000", name : "Data not persisting in the server", isClosed : false, createdAt : new Date(2015,5,19,11,0,0)},
+                { id : "1434511800000", name : "Application not responsive", isClosed : false, createdAt : new Date(2015,5,17,9,0,0)},
+                { id : "1434512800000", name : "Application is hardly reliable", isClosed : false, createdAt : new Date(2015,5,9,9,0,0)},
+                { id : "1434231800000", name : "Authorization has stopped working", isClosed : false, createdAt : new Date(2015,3,19,9,0,0)},
             ];
             $scope.addNew = function(){
                 $scope.bugs.push($scope.newBug);
