@@ -24,6 +24,13 @@
             width : 50%;
             padding : 0px;
         }
+        section{
+            margin-bottom: 5px;
+        }
+        .bugName {
+            padding-top: 0px;
+            margin-top: 0px;
+        }
     </style>
     <script src="angular.js"></script>
     <script>
@@ -39,27 +46,80 @@
     9. Persist the bugs in the localStorage
     10. Persist the bugs in the server
     */
+
+        var bugTrackerApp = angular.module("bugTrackerApp", []);
+
+        bugTrackerApp.controller("bugsController", function($scope){
+            $scope.newBug = '';
+            $scope.bugs = [
+                { name : "User authentication failure", isClosed : false, createdAt : new Date(2015,5,19,9,0,0)},
+                { name : "Data not persisting in the server", isClosed : false, createdAt : new Date(2015,5,19,11,0,0)},
+                { name : "Application not responsive", isClosed : false, createdAt : new Date(2015,5,17,9,0,0)},
+                { name : "Application is hardly reliable", isClosed : false, createdAt : new Date(2015,5,9,9,0,0)},
+                { name : "Authorization has stopped working", isClosed : false, createdAt : new Date(2015,3,19,9,0,0)},
+            ];
+            $scope.addNew = function(){
+                $scope.bugs.push($scope.newBug);
+            };
+            $scope.toggle = function(bug){
+                bug.isClosed = !bug.isClosed;
+            };
+
+            $scope.removeClosed = function(){
+                for(var i=$scope.bugs.length-1; i>=0; i--){
+                    var bug = $scope.bugs[i];
+                    if (bug.isClosed){
+                        $scope.bugs.splice(i,1);
+                    }
+                }
+            };
+
+            $scope.getClosedCount = function(){
+                return $scope.bugs.filter(function(bug){
+                    return bug.isClosed;
+                }).length;
+            };
+
+
+        });
+
     </script>
 
 </head>
-<body>
+<body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
-    <div class="content">
-        <div class="stats"></div>
-        <div class="search"></div>
-        <div class="editor">
+    <div class="content" ng-controller="bugsController">
+        <section class="stats">
+            <h3> <span class="closed">{{getClosedCount()}}</span> / {{bugs.length}} </h3>
+        </section>
+        <section class="search">
+            <label for="">Search</label>
+            <input type="text" ng-model="searchBug.name">
+            <label for="">Sort :</label>
+            <select ng-model="sortField">
+                <option value="name">name</option>
+                <option value="isClosed">isClosed</option>
+            </select>
+
+            <span>Descending ?</span>
+            <input type="checkbox" ng-model="isDescending">
+        </section>
+        <section class="editor">
             <label for="">Bug :</label>
-            <input type="text" name="" id="">
-            <input type="button" value="Add Bug" >
-            <input type="button" value="Remove Closed">
-        </div>
-        <div class="list">
+            <input type="text" ng-model="newBug">
+            <input type="button" value="Add Bug" ng-click="addNew()" >
+            <input type="button" value="Remove Closed" ng-click="removeClosed()">
+        </section>
+        <section class="list">
             <ol>
-                <li>This is bug - 1</li>
-                <li class='closed'>This is bug - 2</li>
-                <li>This is bug - 3</li>
+                <li
+                    ng-repeat="bug in bugs | filter:searchBug | orderBy:sortField:isDescending"
+                >
+                <h2 class="bugName" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">{{bug.name}}</h2>
+                <div>{{bug.createdAt | date}}</div>
+                </li>
             </ol>
-        </div>
+        </section>
     </div>
 </body>
 </html>
