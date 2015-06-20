@@ -1,0 +1,40 @@
+{
+  "bugs": [
+    {
+      "id": 1,
+      "name": "User authentication failure for all admininistrators",
+      "isClosed": false,
+      "createdAt": "2015-06-19T03:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Data not persisting in the server",
+      "isClosed": false,
+      "createdAt": "2015-06-19T05:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "Application not responsive",
+      "isClosed": false,
+      "createdAt": "2015-06-17T03:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "Application is hardly reliable",
+      "isClosed": false,
+      "createdAt": "2015-06-09T03:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "name": "Authorization has stopped working",
+      "isClosed": false,
+      "createdAt": "2015-04-19T03:30:00.000Z"
+    },
+    {
+      "name": "Calendar not displaying appointments",
+      "isClosed": false,
+      "createdAt": "2015-06-19T03:30:00.000Z",
+      "id": 6
+    }
+  ]
+}
