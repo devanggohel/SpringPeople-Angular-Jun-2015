@@ -33,6 +33,8 @@
         }
     </style>
     <script src="angular.js"></script>
+    <script src="moment.js"></script>
+
     <script>
     /*
     1. List all the bugs
@@ -69,7 +71,39 @@
             - length
     */
 
-        var bugTrackerApp = angular.module("bugTrackerApp", []);
+        var utils = angular.module('utils', []);
+        utils.value("appDefaults", {trimLength : 30});
+
+        utils.filter('trimText', function(appDefaults){
+            return function(data, trimLength){
+                trimLength = trimLength || appDefaults.trimLength;
+                return data.length > trimLength ? data.substr(0,trimLength) + "..." : data;
+            };
+        });
+
+        utils.value('momentApi', moment);
+
+        utils.filter('toMoment', function(momentApi){
+            return function(data){
+                return momentApi(data).fromNow();
+            }
+        });
+
+        var bugTrackerApp = angular.module("bugTrackerApp", ['utils']);
+        /*bugTrackerApp.factory('Bug', function(){
+            function Bug(defaults){
+                defaults = defaults || {};
+                this.id = defaults.id || Date.now().toString();
+                this.name = defaults.name || '';
+                this.isClosed = defaults.isClosed || false;
+                this.createdAt = defaults.createdAt || new Date();
+            }
+            Bug.prototype.toggle = function(){
+                this.isClosed = !this.isClosed;
+            }
+            return Bug;
+        });*/
+
         bugTrackerApp.factory('Bug', function(){
             function Bug(defaults){
                 defaults = defaults || {};
@@ -85,7 +119,7 @@
         });
 
 
-        bugTrackerApp.factory("bugStorage", function getBugStorage(Bug){
+       /* bugTrackerApp.factory("bugStorage", function getBugStorage(Bug){
             return {
                 getAll : function(){
                     var result = [];
@@ -103,6 +137,26 @@
                 remove : function(bug){
                 }
             }
+        });*/
+
+       //bugStorage as Service
+         bugTrackerApp.service("bugStorage", function getBugStorage(Bug){
+            this.getAll = function(){
+                var result = [];
+                for(var i=0; i<localStorage.length; i++){
+                    var key = localStorage.key(i);
+                    var bugData = angular.fromJson(localStorage.getItem(key));
+                    var bug = new Bug(bugData);
+                    result.push(bug);
+                }
+                return result;
+            };
+            this.save = function(bug){
+                localStorage.setItem(bug.id.toString(), angular.toJson(bug));
+            };
+            this.remove = function(bug){
+                localStorage.removeItem(bug.id);
+            };
         });
 
         bugTrackerApp.filter('closedCount', function(){
@@ -113,11 +167,7 @@
             };
         });
 
-        bugTrackerApp.filter('trimText', function(){
-            return function(data){
-                return data.length > 30 ? data.substr(0,30) + "..." : data;
-            };
-        });
+
 
         bugTrackerApp.controller("bugsController", function bugsController($scope, bugStorage, Bug){
             //var bugStorage = getBugStorage();
@@ -162,9 +212,10 @@
                 <option value="name">name</option>
                 <option value="isClosed">isClosed</option>
             </select>
-
             <span>Descending ?</span>
             <input type="checkbox" ng-model="isDescending">
+            <br>
+            <input type="range" min="0" max="100" ng-model="bugTrimLength">
         </section>
         <section class="editor">
             <label for="">Bug :</label>
@@ -178,9 +229,9 @@
                     ng-repeat="bug in bugs | filter:searchBug | orderBy:sortField:isDescending"
                 >
                 <h2 class="bugName" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">
-                    {{bug.name | trimText}}
+                    {{bug.name | trimText:bugTrimLength}}
                 </h2>
-                <div>{{bug.createdAt | date}}</div>
+                <div>{{bug.createdAt | toMoment}}</div>
                 </li>
             </ol>
         </section>
