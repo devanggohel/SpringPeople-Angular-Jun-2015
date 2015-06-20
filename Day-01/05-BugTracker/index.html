@@ -69,19 +69,23 @@
             - length
     */
 
-        function Bug(defaults){
-            defaults = defaults || {};
-            this.id = defaults.id || Date.now().toString();
-            this.name = defaults.name || '';
-            this.isClosed = defaults.isClosed || false;
-            this.createdAt = defaults.createdAt || new Date();
-        }
-        Bug.prototype.toggle = function(){
-            this.isClosed = !this.isClosed;
-        }
-
         var bugTrackerApp = angular.module("bugTrackerApp", []);
-        bugTrackerApp.factory("bugStorage", function getBugStorage(){
+        bugTrackerApp.factory('Bug', function(){
+            function Bug(defaults){
+                defaults = defaults || {};
+                this.id = defaults.id || Date.now().toString();
+                this.name = defaults.name || '';
+                this.isClosed = defaults.isClosed || false;
+                this.createdAt = defaults.createdAt || new Date();
+            }
+            Bug.prototype.toggle = function(){
+                this.isClosed = !this.isClosed;
+            }
+            return Bug;
+        });
+
+
+        bugTrackerApp.factory("bugStorage", function getBugStorage(Bug){
             return {
                 getAll : function(){
                     var result = [];
@@ -101,9 +105,15 @@
             }
         });
 
+        bugTrackerApp.filter('closedCount', function(){
+            return function(bugs){
+                return bugs.filter(function(bug){
+                    return bug.isClosed;
+                }).length;
+            };
+        });
 
-
-        bugTrackerApp.controller("bugsController", function($scope, bugStorage){
+        bugTrackerApp.controller("bugsController", function bugsController($scope, bugStorage, Bug){
             //var bugStorage = getBugStorage();
             $scope.newBug = '';
             $scope.bugs = bugStorage.getAll();
@@ -127,13 +137,6 @@
                 }
             };
 
-            $scope.getClosedCount = function(){
-                return $scope.bugs.filter(function(bug){
-                    return bug.isClosed;
-                }).length;
-            };
-
-
         });
 
     </script>
@@ -143,7 +146,7 @@
     <h1>Bug Tracker</h1>
     <div class="content" ng-controller="bugsController">
         <section class="stats">
-            <h3> <span class="closed">{{getClosedCount()}}</span> / {{bugs.length}} </h3>
+            <h3> <span class="closed">{{bugs | closedCount}}</span> / {{bugs.length}} </h3>
         </section>
         <section class="search">
             <label for="">Search</label>
