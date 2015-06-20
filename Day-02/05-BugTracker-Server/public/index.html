@@ -169,25 +169,39 @@
 
 
 
-        bugTrackerApp.controller("bugsController", function bugsController($scope, bugStorage, Bug){
+        bugTrackerApp.controller("bugsController", function bugsController($scope, Bug, $http){
             //var bugStorage = getBugStorage();
             $scope.newBug = '';
-            $scope.bugs = bugStorage.getAll();
+            var getAllPromise = $http.get("http://localhost:5555/bugs");
+            getAllPromise.then(function(response){
+                $scope.bugs = response.data.map(function(bugData){
+                    return new Bug(bugData);
+                });
+            });
+
             $scope.addNew = function(){
                 var newBug = new Bug({name : $scope.newBug});
-                bugStorage.save(newBug);
-                $scope.bugs.push(newBug);
+
+                $http
+                    .post("http://localhost:5555/bugs", newBug)
+                    .then(function(response){
+                        $scope.bugs.push(new Bug(response.data));
+                    });
+
+
             };
             $scope.toggle = function(bug){
                bug.toggle();
-                bugStorage.save(bug);
+                $http
+                    .put("http://localhost:5555/bugs/" + bug.id, bug);
             };
 
             $scope.removeClosed = function(){
                 for(var i=$scope.bugs.length-1; i>=0; i--){
                     var bug = $scope.bugs[i];
                     if (bug.isClosed){
-                        bugStorage.remove(bug);
+                        $http
+                            .delete("http://localhost:5555/bugs/" + bug.id);
                         $scope.bugs.splice(i,1);
                     }
                 }

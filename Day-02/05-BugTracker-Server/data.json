@@ -1,12 +1,6 @@
 {
   "bugs": [
     {
-      "id": 1,
-      "name": "User authentication failure for all admininistrators",
-      "isClosed": false,
-      "createdAt": "2015-06-19T03:30:00.000Z"
-    },
-    {
       "id": 2,
       "name": "Data not persisting in the server",
       "isClosed": false,
