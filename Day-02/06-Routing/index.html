@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Routing Demo</title>
+    <script src="angular.js"></script>
+    <script src="angular-route.js"></script>
+
+    <script>
+        var myApp = angular.module('myApp', ['ngRoute']);
+        myApp.config(function($routeProvider){
+            $routeProvider
+                .when('/products', {
+                    //template : '<h1>Products</h1>'
+                    templateUrl : 'templates/productsTemplate.html',
+                    controller : 'productsController'
+                })
+                .when('/customers', {
+                    //template : '<h1>Customers</h1>'
+                templateUrl : 'templates/customersTemplate.html'
+                })
+                .when('/products/:productId', {
+                    templateUrl : 'templates/productDetailsTemplate.html',
+                    controller : 'productsDetailsController'
+                })
+                .otherwise({
+                    redirectTo : '/products'
+                });
+        });
+        myApp.service("productsService", function(){
+            this.getAll = function(){
+                return [
+                    {id : 5, name : "Pen", cost : 100, units : 40, desc : 'Quibusdam ut admodum. Te illum lorem sunt commodo. Tempor id quorum ut veniam consequat ex enim varias, in varias sint qui probant ne tempor magna legam quibusdam veniam qui ea nulla officia, ad ut varias tempor, aute ea ad enim quibusdam si qui summis aliqua quid aliquip. Veniam ne a quem proident. Ut aute cohaerescant iis cillum iudicem quo voluptatibus, a quem arbitrantur ex irure eiusmod ubi despicationes. Iis sunt legam se arbitror, doctrina ita occaecat. Si do coniunctione, ubi non quid irure aute, multos litteris iis aliquip do appellat iis veniam officia se lorem philosophari quibusdam fore cupidatat, e mentitum arbitrantur ex ad esse nescius laboris, aliquip dolore id commodo firmissimum.'},
+                    {id : 4, name : "Den", cost : 40, units : 30, desc : 'Quibusdam ut admodum. Te illum lorem sunt commodo. Tempor id quorum ut veniam consequat ex enim varias, in varias sint qui probant ne tempor magna legam quibusdam veniam qui ea nulla officia, ad ut varias tempor, aute ea ad enim quibusdam si qui summis aliqua quid aliquip. Veniam ne a quem proident. Ut aute cohaerescant iis cillum iudicem quo voluptatibus, a quem arbitrantur ex irure eiusmod ubi despicationes. Iis sunt legam se arbitror, doctrina ita occaecat. Si do coniunctione, ubi non quid irure aute, multos litteris iis aliquip do appellat iis veniam officia se lorem philosophari quibusdam fore cupidatat, e mentitum arbitrantur ex ad esse nescius laboris, aliquip dolore id commodo firmissimum.'},
+                    {id : 9, name : "Ten", cost : 60, units : 80, desc : 'Quibusdam ut admodum. Te illum lorem sunt commodo. Tempor id quorum ut veniam consequat ex enim varias, in varias sint qui probant ne tempor magna legam quibusdam veniam qui ea nulla officia, ad ut varias tempor, aute ea ad enim quibusdam si qui summis aliqua quid aliquip. Veniam ne a quem proident. Ut aute cohaerescant iis cillum iudicem quo voluptatibus, a quem arbitrantur ex irure eiusmod ubi despicationes. Iis sunt legam se arbitror, doctrina ita occaecat. Si do coniunctione, ubi non quid irure aute, multos litteris iis aliquip do appellat iis veniam officia se lorem philosophari quibusdam fore cupidatat, e mentitum arbitrantur ex ad esse nescius laboris, aliquip dolore id commodo firmissimum.'},
+                    {id : 2, name : "Hen", cost : 300, units : 90, desc : 'Quibusdam ut admodum. Te illum lorem sunt commodo. Tempor id quorum ut veniam consequat ex enim varias, in varias sint qui probant ne tempor magna legam quibusdam veniam qui ea nulla officia, ad ut varias tempor, aute ea ad enim quibusdam si qui summis aliqua quid aliquip. Veniam ne a quem proident. Ut aute cohaerescant iis cillum iudicem quo voluptatibus, a quem arbitrantur ex irure eiusmod ubi despicationes. Iis sunt legam se arbitror, doctrina ita occaecat. Si do coniunctione, ubi non quid irure aute, multos litteris iis aliquip do appellat iis veniam officia se lorem philosophari quibusdam fore cupidatat, e mentitum arbitrantur ex ad esse nescius laboris, aliquip dolore id commodo firmissimum.'}
+                ]
+            }
+        });
+        myApp.controller("productsController", function($scope, productsService){
+            $scope.products = productsService.getAll();
+        });
+        myApp.controller("productsDetailsController", function($scope, productsService, $routeParams){
+            console.log($routeParams);
+            var productId = parseInt($routeParams.productId);
+            $scope.product = productsService.getAll().filter(function(p){
+                return p.id === productId;
+            })[0];
+        });
+    </script>
+</head>
+<body ng-app="myApp">
+    <a href="#/products">Products</a> &nbsp; &nbsp; <a href="#/customers">Customers</a>
+    <ng-view></ng-view>
+</body>
+</html>
