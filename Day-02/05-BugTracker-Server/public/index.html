@@ -167,16 +167,29 @@
             };
         });
 
+        bugTrackerApp.service("bugService", function($http, Bug, $q){
+            this.getAll = function(){
+                 var deferred = $q.defer();
+
+                 var getAllPromise = $http.get("http://localhost:5555/bugs");
+                 getAllPromise.then(function(response){
+                    var result = response.data.map(function(bugData){
+                        return new Bug(bugData);
+                    });
+                    deferred.resolve(result);
+                });
+
+                return deferred.promise;
+            }
+        })
 
 
-        bugTrackerApp.controller("bugsController", function bugsController($scope, Bug, $http){
+        bugTrackerApp.controller("bugsController", function bugsController($scope, Bug, $http, bugService){
             //var bugStorage = getBugStorage();
             $scope.newBug = '';
-            var getAllPromise = $http.get("http://localhost:5555/bugs");
-            getAllPromise.then(function(response){
-                $scope.bugs = response.data.map(function(bugData){
-                    return new Bug(bugData);
-                });
+
+            bugService.getAll().then(function(bugs){
+                $scope.bugs = bugs;
             });
 
             $scope.addNew = function(){
