@@ -113,6 +113,12 @@
             };
         });
 
+        bugTrackerApp.filter('trimText', function(){
+            return function(data){
+                return data.length > 30 ? data.substr(0,30) + "..." : data;
+            };
+        });
+
         bugTrackerApp.controller("bugsController", function bugsController($scope, bugStorage, Bug){
             //var bugStorage = getBugStorage();
             $scope.newBug = '';
@@ -171,7 +177,9 @@
                 <li
                     ng-repeat="bug in bugs | filter:searchBug | orderBy:sortField:isDescending"
                 >
-                <h2 class="bugName" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">{{bug.name}}</h2>
+                <h2 class="bugName" ng-click="toggle(bug)" ng-class="{closed : bug.isClosed}">
+                    {{bug.name | trimText}}
+                </h2>
                 <div>{{bug.createdAt | date}}</div>
                 </li>
             </ol>
