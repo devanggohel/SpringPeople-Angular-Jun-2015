@@ -69,29 +69,59 @@
             - length
     */
 
+        function Bug(defaults){
+            defaults = defaults || {};
+            this.id = defaults.id || Date.now().toString();
+            this.name = defaults.name || '';
+            this.isClosed = defaults.isClosed || false;
+            this.createdAt = defaults.createdAt || new Date();
+        }
+        Bug.prototype.toggle = function(){
+            this.isClosed = !this.isClosed;
+        }
 
         var bugTrackerApp = angular.module("bugTrackerApp", []);
+        bugTrackerApp.factory("bugStorage", function getBugStorage(){
+            return {
+                getAll : function(){
+                    var result = [];
+                    for(var i=0; i<localStorage.length; i++){
+                        var key = localStorage.key(i);
+                        var bugData = angular.fromJson(localStorage.getItem(key));
+                        var bug = new Bug(bugData);
+                        result.push(bug);
+                    }
+                    return result;
+                },
+                save : function(bug){
+                    localStorage.setItem(bug.id.toString(), angular.toJson(bug));
+                },
+                remove : function(bug){
+                }
+            }
+        });
 
-        bugTrackerApp.controller("bugsController", function($scope){
+
+
+        bugTrackerApp.controller("bugsController", function($scope, bugStorage){
+            //var bugStorage = getBugStorage();
             $scope.newBug = '';
-            $scope.bugs = [
-                { id : "1434684600000", name : "User authentication failure", isClosed : false, createdAt : new Date(2015,5,19,9,0,0)},
-                { id : "1434691800000", name : "Data not persisting in the server", isClosed : false, createdAt : new Date(2015,5,19,11,0,0)},
-                { id : "1434511800000", name : "Application not responsive", isClosed : false, createdAt : new Date(2015,5,17,9,0,0)},
-                { id : "1434512800000", name : "Application is hardly reliable", isClosed : false, createdAt : new Date(2015,5,9,9,0,0)},
-                { id : "1434231800000", name : "Authorization has stopped working", isClosed : false, createdAt : new Date(2015,3,19,9,0,0)},
-            ];
+            $scope.bugs = bugStorage.getAll();
             $scope.addNew = function(){
-                $scope.bugs.push($scope.newBug);
+                var newBug = new Bug({name : $scope.newBug});
+                bugStorage.save(newBug);
+                $scope.bugs.push(newBug);
             };
             $scope.toggle = function(bug){
-                bug.isClosed = !bug.isClosed;
+               bug.toggle();
+                bugStorage.save(bug);
             };
 
             $scope.removeClosed = function(){
                 for(var i=$scope.bugs.length-1; i>=0; i--){
                     var bug = $scope.bugs[i];
                     if (bug.isClosed){
+                        bugStorage.remove(bug);
                         $scope.bugs.splice(i,1);
                     }
                 }
